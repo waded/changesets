@@ -4,6 +4,19 @@ import { getPackages } from "@manypkg/get-packages";
 import { GitError } from "@changesets/errors";
 import isSubdir from "is-subdir";
 
+async function getLastCommitHash(cwd: string) {
+  const gitCmd = await spawn("git", ["rev-parse", "HEAD"], { cwd });
+
+  if (gitCmd.code !== 0) {
+    console.log(
+      `Could not get the commit hash due to ${gitCmd.stderr.toString()}`
+    );
+    return false;
+  }
+
+  return gitCmd.stdout.toString();
+}
+
 async function add(pathToFile: string, cwd: string) {
   const gitCmd = await spawn("git", ["add", pathToFile], { cwd });
 
@@ -131,5 +144,6 @@ export {
   commit,
   tag,
   getChangedPackagesSinceRef,
-  getChangedChangesetFilesSinceRef
+  getChangedChangesetFilesSinceRef,
+  getLastCommitHash
 };
